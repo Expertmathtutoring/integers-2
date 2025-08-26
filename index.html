@@ -1,418 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Integer Obstacle Jumper — Learn by Crossing</title>
-<style>
-  :root{
-    --bg1:#e6f7f5;
-    --bg2:#fef6f9;
-    --panel:#ffffffcc;
-    --muted:#7b8a93;
-    --accent:#6bbfbd;
-    --good:#3fb97f;
-    --bad:#ff6b6b;
-    --shadow: 0 8px 24px rgba(8,20,30,0.12);
-  }
-
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,"Helvetica Neue",Arial;}
-  body{
-    background: linear-gradient(135deg,var(--bg1),var(--bg2));
-    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    gap:18px;padding:22px;
-    color:#123;
-  }
-
-  h1{margin:8px 0 0;font-size:20px;color:#114;letter-spacing:0.2px}
-  .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
-
-  .stage {
-    width: min(960px,96vw);
-    background: var(--panel);
-    border-radius:14px;
-    padding:18px;
-    box-shadow:var(--shadow);
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  /* Game view */
-  .game-area {
-    position:relative;
-    height:320px;
-    background: linear-gradient(180deg,#cfeff0,#dff3f6);
-    border-radius:10px;
-    overflow:hidden;
-    border:1px solid rgba(0,0,0,0.04);
-  }
-
-  .ground{
-    position:absolute;left:0;right:0;height:48px;background:linear-gradient(180deg,#ffffff00,#ffffff55);
-    bottom:0;border-top:1px solid rgba(0,0,0,0.04);
-  }
-
-  /* runner token */
-  .runner {
-    position:absolute;
-    width:56px;height:56px;
-    border-radius:50%;
-    left:48px;
-    bottom:56px; /* above ground */
-    display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(180deg,#70c8ff,#2b9cff);
-    box-shadow:0 6px 18px rgba(43,156,255,0.18), inset 0 -6px 14px rgba(255,255,255,0.12);
-    border:3px solid rgba(255,255,255,0.7);
-    will-change:left,bottom,transform;
-  }
-  .runner .face{font-size:22px;transform:translateY(1px)}
-
-  /* obstacle (hurdle) */
-  .obstacle {
-    position:absolute;
-    width:60px;height:44px;
-    bottom:56px;
-    display:flex;align-items:flex-end;justify-content:center;
-    gap:6px;
-  }
-  .h-bar{
-    width:46px;height:10px;background:#ff9b71;border-radius:6px;
-    box-shadow:0 4px 10px rgba(255,155,113,0.18);
-  }
-  .h-leg{ width:6px;height:34px;background:#c9734f;border-radius:4px; }
-
-  /* UI: question + options */
-  .ui-row{ display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
-  .question {
-    font-weight:700;color:#0b3; font-size:18px;
-    background:linear-gradient(180deg,#ffffffcc,#ffffff88);
-    padding:10px 14px;border-radius:10px; min-width:220px;
-    box-shadow:0 6px 16px rgba(10,30,40,0.05);
-  }
-
-  .options { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; min-height:48px;}
-  .opt-btn{
-    min-width:86px;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;
-    background:linear-gradient(180deg,#fff,#f0f7f7); color:#114; font-weight:700;
-    box-shadow:0 6px 16px rgba(8,20,30,0.06); transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .opt-btn:hover{ transform:translateY(-4px); box-shadow:0 12px 26px rgba(8,20,30,0.08)}
-  .opt-btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
-  .opt-good{ background:linear-gradient(180deg,#dcf9e8,#b8f1d0); color:#0a6b3f; }
-  .opt-bad{ background:linear-gradient(180deg,#ffdfe0,#ffbdbf); color:#7b1a1a; }
-
-  .meta {display:flex;gap:12px;align-items:center;justify-content:flex-end;color:var(--muted);font-size:13px}
-  .pill{ background:rgba(0,0,0,0.03); padding:8px 10px;border-radius:999px;}
-
-  .feedback { margin-top:6px; min-height:28px; font-weight:800; font-size:15px; text-align:center;}
-
-  .controls{ display:flex; gap:10px; justify-content:center; margin-top:6px;}
-  .btn{ padding:8px 12px;border-radius:10px;border:none;background:#2b9cff;color:#fff;font-weight:700;cursor:pointer }
-  .btn.secondary{ background:#6bbfbd; color:#053; }
-
-  /* small screens */
-  @media (max-width:640px){
-    .options{ justify-content:center }
-    .question{ width:100%; text-align:center }
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Integer Operations Obstacle Game</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5rem;
+    }
+    #game {
+      margin: 20px auto;
+      width: 80%;
+      max-width: 700px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    #question {
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+    .options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .option {
+      background: #ff9800;
+      padding: 15px 25px;
+      font-size: 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .option:hover {
+      background: #ffc107;
+      transform: scale(1.1);
+    }
+    #obstacle-area {
+      margin-top: 30px;
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+    #character {
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      width: 80px;
+      transition: left 1s, bottom 0.5s;
+    }
+    .obstacle {
+      position: absolute;
+      bottom: 0;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h1>Integer Obstacle Jumper</h1>
-  <div class="sub">Choose the correct answer to make the runner cross the next obstacle — friendly encouragement along the way!</div>
-
-  <div class="stage" id="stage">
-    <div class="game-area" id="gameArea">
-      <div class="runner" id="runner"><div class="face">🙂</div></div>
-      <div class="ground"></div>
+  <h1>Integer Obstacle Challenge 🧮🏃</h1>
+  <div id="game">
+    <div id="question">Loading...</div>
+    <div class="options" id="options"></div>
+    <div id="obstacle-area">
+      <img id="character" src="https://i.ibb.co/DW15H7J/runner.png" alt="character">
+      <img id="obstacle" class="obstacle" src="" alt="obstacle">
     </div>
-
-    <div class="ui-row">
-      <div class="question" id="question">Loading…</div>
-
-      <div style="flex:1"></div>
-
-      <div class="options" id="options"></div>
-
-      <div class="meta">
-        <div class="pill" id="progress">Obstacle 0 / 0</div>
-        <div class="pill" id="score">Score: 0</div>
-      </div>
-    </div>
-
-    <div class="feedback" id="feedback"></div>
-
-    <div class="controls">
-      <button class="btn" id="resetBtn">🔄 Restart</button>
-      <button class="btn secondary" id="skipBtn">⏭ Skip (no move)</button>
-    </div>
+    <div id="feedback"></div>
   </div>
 
-<script>
-/* -------------------------
-  Integer Obstacle Jumper
-   - Runner crosses obstacles one after another
-   - Correct answer -> animate jump forward to obstacle and increment score
-   - Wrong answer -> encouraging message, no forward move
-   - Options disabled while jumping
---------------------------*/
+  <script>
+    const questions = [
+      { q: "5 - 3", a: 2 },
+      { q: "-3 - (-5)", a: 2 },
+      { q: "4 - (-7)", a: 11 },
+      { q: "6 - (-1)", a: 7 },
+      { q: "0 - 3", a: -3 },
+      { q: "0 - (-4)", a: 4 },
+      { q: "-7 + 9", a: 2 },
+      { q: "-8 - 2", a: -10 },
+      { q: "12 - 15", a: -3 },
+      { q: "-10 + (-6)", a: -16 }
+    ];
 
-(function(){
-  // DOM
-  const gameArea = document.getElementById('gameArea');
-  const runnerEl = document.getElementById('runner');
-  const questionEl = document.getElementById('question');
-  const optionsEl = document.getElementById('options');
-  const feedbackEl = document.getElementById('feedback');
-  const progressEl = document.getElementById('progress');
-  const scoreEl = document.getElementById('score');
-  const resetBtn = document.getElementById('resetBtn');
-  const skipBtn = document.getElementById('skipBtn');
+    const obstacles = [
+      "https://i.ibb.co/6yMknXp/wall.png", 
+      "https://i.ibb.co/qpxkLhS/river.png", 
+      "https://i.ibb.co/k9CccpP/spikes.png", 
+      "https://i.ibb.co/MR4b1Xj/pit.png"
+    ];
 
-  // state
-  let obstacleCount = 8; // how many obstacles in a run
-  let obstacleIndex = 0; // current obstacle number (1..obstacleCount)
-  let score = 0;
-  let attempts = 0;
-  let isBusy = false;    // lock during animation
-  let runnerX = 48;      // px from left
-  const groundY = 56;    // px bottom offset base
-  const jumpHeight = 110; // px jump arc
-  const moveDistance = 160; // how far runner advances per success
+    let current = 0;
+    const character = document.getElementById("character");
+    const obstacle = document.getElementById("obstacle");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const feedback = document.getElementById("feedback");
 
-  // arrays for obstacles in DOM
-  let currentObstacle = null;
+    function loadQuestion() {
+      if (current >= questions.length) {
+        questionEl.textContent = "🎉 You finished all obstacles!";
+        optionsEl.innerHTML = "";
+        obstacle.style.display = "none";
+        return;
+      }
+      let q = questions[current];
+      questionEl.textContent = `Solve: ${q.q}`;
+      optionsEl.innerHTML = "";
+      feedback.textContent = "";
 
-  // helper: ease
-  function easeInOutQuad(t){ return t<0.5 ? 2*t*t : -1 + (4-2*t)*t; }
+      // Random obstacle
+      obstacle.src = obstacles[Math.floor(Math.random() * obstacles.length)];
+      obstacle.style.display = "block";
 
-  // generate a question (supports +, -, ×, and integer ÷)
-  function makeQuestion(){
-    const ops = ['+','-','×','÷'];
-    const op = ops[Math.floor(Math.random()*ops.length)];
-    let a,b,ans,text;
-    if(op === '+'){
-      a = rnd(-12,12); b = rnd(-12,12); ans = a + b; text = `${a} + ${b}`;
-    } else if(op === '-'){
-      a = rnd(-12,12); b = rnd(-12,12); ans = a - b; text = `${a} − ${b}`;
-    } else if(op === '×'){
-      a = rnd(-9,12); b = rnd(-9,12); ans = a * b; text = `${a} × ${b}`;
-    } else { // integer division: pick divisor and quotient to make integer result
-      const divisor = nonZero(-10,10);
-      const quotient = rnd(-10,10);
-      a = divisor * quotient; b = divisor; ans = quotient; text = `${a} ÷ ${b}`;
-    }
-    return {a,b,op,ans,text};
-  }
+      let answers = [q.a];
+      while (answers.length < 4) {
+        let wrong = q.a + Math.floor(Math.random() * 11) - 5;
+        if (!answers.includes(wrong)) answers.push(wrong);
+      }
+      answers.sort(() => Math.random() - 0.5);
 
-  function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-  function nonZero(min,max){ let n=0; while(n===0) n = rnd(min,max); return n; }
-
-  // options generator: unique integer options
-  function makeOptions(correct){
-    const set = new Set([correct]);
-    while(set.size < 4){
-      const offset = rnd(-8,8);
-      if(offset === 0) continue;
-      set.add(correct + offset);
-    }
-    return shuffle(Array.from(set));
-  }
-  function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
-
-  // place obstacle at position relative to runnerX
-  function spawnObstacle(){
-    // remove existing obstacle
-    if(currentObstacle){
-      currentObstacle.remove();
-      currentObstacle = null;
-    }
-    const areaW = gameArea.clientWidth;
-    // calculate obstacle x so it's ahead of runner but visible
-    let targetX = runnerX + moveDistance;
-    // clamp so obstacle not too close to right edge
-    const maxX = areaW - 140;
-    if(targetX > maxX) targetX = maxX;
-    // create obstacle DOM
-    const ob = document.createElement('div');
-    ob.className = 'obstacle';
-    ob.style.left = `${targetX}px`;
-    ob.innerHTML = '<div class="h-bar"></div><div class="h-leg"></div>';
-    // style specifics (we create inner bars)
-    ob.style.display = 'flex'; ob.style.flexDirection='column'; ob.style.alignItems='center';
-    ob.querySelector('.h-bar').style.marginBottom='6px';
-    // append
-    gameArea.appendChild(ob);
-    currentObstacle = ob;
-  }
-
-  // clear options and show question
-  function presentQuestion(){
-    if(isBusy) return;
-    if(obstacleIndex >= obstacleCount){
-      questionEl.textContent = '🎉 Course complete — great job!';
-      optionsEl.innerHTML = '';
-      feedbackEl.textContent = `Final score: ${score} / ${attempts}`;
-      return;
-    }
-
-    const q = makeQuestion();
-    questionEl.textContent = `Solve: ${q.text}`;
-    const opts = makeOptions(q.ans);
-
-    optionsEl.innerHTML = '';
-    opts.forEach(val=>{
-      const btn = document.createElement('button');
-      btn.className = 'opt-btn';
-      btn.textContent = val;
-      btn.onclick = () => onPick(btn, val, q.ans);
-      optionsEl.appendChild(btn);
-    });
-
-    // spawn or reposition obstacle for this round (if none)
-    spawnObstacle();
-    updateMeta();
-    feedbackEl.textContent = '';
-  }
-
-  // what happens when player picks an option
-  function onPick(btn, val, correct){
-    if(isBusy) return;
-    // disable all options immediately
-    Array.from(optionsEl.children).forEach(b=> b.disabled = true);
-    attempts++;
-    if(val === correct){
-      // mark good
-      btn.classList.add('opt-good');
-      score++;
-      feedbackEl.innerHTML = choosePraise();
-      // animate runner jumping forward to obstacle location
-      const obstacleX = parseFloat(currentObstacle.style.left);
-      isBusy = true;
-      animateJumpTo(obstacleX - 10, 700).then(()=>{
-        // landed beyond obstacle: remove it, increment index
-        if(currentObstacle){ currentObstacle.remove(); currentObstacle = null; }
-        obstacleIndex++;
-        isBusy = false;
-        // small celebration face change
-        showFace('😄');
-        // prepare next question automatically
-        setTimeout(()=>{ showFace('🙂'); presentQuestion(); }, 600);
+      answers.forEach(ans => {
+        let btn = document.createElement("div");
+        btn.className = "option";
+        btn.textContent = ans;
+        btn.onclick = () => checkAnswer(ans, q.a);
+        optionsEl.appendChild(btn);
       });
-    } else {
-      // mark wrong and encourage
-      btn.classList.add('opt-bad');
-      feedbackEl.innerHTML = wrongEncouragement();
-      showFace('😯');
-      // small nudge / wiggle animation to indicate no move
-      shakeElement(runnerEl, 500);
-      // re-enable options after short delay so learner can try another option (if you prefer allow multiple tries),
-      // here we keep disabled for this round and move to next question automatically after short pause:
-      setTimeout(()=>{
-        Array.from(optionsEl.children).forEach(b=> b.disabled = false);
-        showFace('🙂');
-        // auto move on to next question without moving the runner
-        obstacleIndex++; // we still progress obstacle count even if wrong (you can change this)
-        if(currentObstacle){ currentObstacle.remove(); currentObstacle=null; }
-        presentQuestion();
+    }
+
+    function checkAnswer(ans, correct) {
+      if (ans === correct) {
+        feedback.textContent = "✅ Correct! You crossed the obstacle!";
+        feedback.style.color = "lightgreen";
+        jumpObstacle();
+        setTimeout(() => { current++; loadQuestion(); }, 1500);
+      } else {
+        feedback.textContent = "❌ Oops! Try again.";
+        feedback.style.color = "red";
+      }
+    }
+
+    function jumpObstacle() {
+      character.style.bottom = "100px";
+      setTimeout(() => {
+        character.style.bottom = "0px";
+        character.style.left = "200px";
+      }, 500);
+      setTimeout(() => {
+        character.style.left = "20px";
       }, 1000);
     }
-    updateMeta();
-  }
 
-  // animate runner jumping to targetX over duration (ms). returns Promise
-  function animateJumpTo(targetX, duration=700){
-    return new Promise(resolve=>{
-      const startLeft = runnerX;
-      const endLeft = targetX;
-      const startTime = performance.now();
-      function frame(now){
-        const t = Math.min(1, (now - startTime)/duration);
-        const e = easeInOutQuad(t);
-        const curX = startLeft + (endLeft - startLeft)*e;
-        // sine-based jump curve
-        const y = Math.sin(Math.PI * t) * (jumpHeight);
-        runnerEl.style.left = `${curX}px`;
-        runnerEl.style.bottom = `${groundY + y}px`;
-        if(t < 1) requestAnimationFrame(frame);
-        else {
-          // ensure placement at end
-          runnerX = endLeft;
-          runnerEl.style.left = `${runnerX}px`;
-          runnerEl.style.bottom = `${groundY}px`;
-          resolve();
-        }
-      }
-      requestAnimationFrame(frame);
-    });
-  }
-
-  // small helper: shake element
-  function shakeElement(el, ms=500){
-    const start = performance.now();
-    const orig = el.style.transform || '';
-    function loop(now){
-      const t = (now - start)/ms;
-      if(t >= 1){ el.style.transform = orig; return; }
-      const amp = 6*(1 - t);
-      const x = (Math.random()*2-1)*amp;
-      el.style.transform = `translateX(${x}px)`;
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-  }
-
-  // face change
-  function showFace(emoji){
-    const f = runnerEl.querySelector('.face');
-    if(f) f.textContent = emoji;
-  }
-
-  // meta update
-  function updateMeta(){
-    progressEl.textContent = `Obstacle ${Math.min(obstacleIndex+1, obstacleCount)} / ${obstacleCount}`;
-    scoreEl.textContent = `Score: ${score}`;
-  }
-
-  function choosePraise(){
-    const arr = ['🌟 Brilliant!','🚀 Super!', '🏆 Nice cross!','✨ You rock!', '🔥 Great leap!'];
-    return `<span style="color:var(--good)">${arr[Math.floor(Math.random()*arr.length)]}</span>`;
-  }
-  function wrongEncouragement(){
-    const arr = ['No worries — try again!','Almost — you can do it!','Keep going — try another option!'];
-    return `<span style="color:var(--bad)">${arr[Math.floor(Math.random()*arr.length)]}</span>`;
-  }
-
-  // Reset game
-  function resetGame(){
-    // clean obstacles
-    if(currentObstacle){ currentObstacle.remove(); currentObstacle = null; }
-    runnerX = 48;
-    runnerEl.style.left = runnerX + 'px';
-    runnerEl.style.bottom = groundY + 'px';
-    obstacleIndex = 0; score = 0; attempts = 0;
-    showFace('🙂');
-    feedbackEl.textContent = '';
-    presentQuestion();
-  }
-
-  // Skip button: advance obstacle without movement (useful)
-  skipBtn.addEventListener('click', ()=>{
-    if(isBusy) return;
-    if(currentObstacle){ currentObstacle.remove(); currentObstacle = null; }
-    obstacleIndex++;
-    presentQuestion();
-  });
-
-  resetBtn.addEventListener('click', resetGame);
-
-  // start
-  // set initial runner bottom to ground constant
-  runnerEl.style.bottom = groundY + 'px';
-  // give small delay to layout then start
-  setTimeout(()=>{ resetGame(); }, 120);
-})();
-</script>
+    loadQuestion();
+  </script>
 </body>
 </html>
+
